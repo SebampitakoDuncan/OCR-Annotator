@@ -164,8 +164,6 @@ async def feedback(request):
     return Redirect("/")
 
 
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+# Removed local uvicorn runner for Render deployment
+# Render uses: uv run uvicorn app:app --host 0.0.0.0 --port $PORT
 
