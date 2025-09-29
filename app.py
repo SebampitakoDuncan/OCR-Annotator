@@ -41,7 +41,14 @@ class AnnotatedDocument:
     uploaded_at: datetime
 
 
-converter = DocumentConverter(allowed_formats=[InputFormat.IMAGE, InputFormat.PDF])
+_converter = None
+
+def get_converter():
+    """Lazy-load the DocumentConverter to avoid startup delays."""
+    global _converter
+    if _converter is None:
+        _converter = DocumentConverter(allowed_formats=[InputFormat.IMAGE, InputFormat.PDF])
+    return _converter
 
 
 def extract_text_from_docling(document: DoclingDocument) -> str:
@@ -75,6 +82,7 @@ def list_feedback_entries() -> List[Dict[str, str]]:
 
 def convert_upload_to_text(file_path: Path) -> AnnotatedDocument:
     doc_id = uuid.uuid4().hex
+    converter = get_converter()  # Lazy-load on first use
     result = converter.convert(file_path)
     text_content = extract_text_from_docling(result.document)
     return AnnotatedDocument(
